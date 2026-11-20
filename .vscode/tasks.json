@@ -1,0 +1,105 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Paketle: Tizen .wgt Paketi Oluştur (Build & Package)",
+      "type": "shell",
+      "command": "npm run package",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "detail": "Kaynak kodları derler ve Apps2Samsung ile TV'ye yüklenecek dist/olauncher.wgt dosyasını oluşturur."
+    },
+    {
+      "label": "Test: Bütün Mimari ve Dosya Testlerini Koş (Run Tests)",
+      "type": "shell",
+      "command": "npm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "detail": "Tüm config, manifest, 7-kart kuralı, JS sentaksı ve güvenlik testlerini koşar."
+    },
+    {
+      "label": "Güvenlik: Sır ve Gizlilik Denetimi (Run Hygiene Audit)",
+      "type": "shell",
+      "command": "npm run hygiene",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "detail": "Git tarafından izlenen tüm dosyalarda sır, LAN IP ve özel dosya sızıntısı kontrolü yapar."
+    },
+    {
+      "label": "Simülatör: Desktop Preview Başlat (Dev Server)",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "detail": "Bilgisayar tarayıcısında http://127.0.0.1:8080 adresinde mock HA ile simülatörü çalıştırır."
+    },
+    {
+      "label": "Simülatör: Canlı Home Assistant ile Başlat (Real HA)",
+      "type": "shell",
+      "command": "npm run dev:real-ha",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "detail": "Mock HA yerine launcher/config.json içindeki gerçek Home Assistant bağlantısı ile simülatörü çalıştırır."
+    },
+    {
+      "label": "HA: Sesli Komut Scriptlerini Yükle (Deploy Siri Scripts)",
+      "type": "shell",
+      "command": "npm run ha:deploy-scripts",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "detail": "HA_URL ve HA_TOKEN ortam değişkenlerini kullanarak Siri/Home Assistant scriptlerini yükler."
+    }
+  ]
+}

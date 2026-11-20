@@ -1,0 +1,34 @@
+{
+  "name": "olauncher",
+  "version": "1.13.0",
+  "private": true,
+  "description": "OLauncher — Samsung 65QN95B (Tizen 6.5) için özel 4K minimalist TV launcher ve C++ kurtarma araçları.",
+  "author": "muhendisbey",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muhendisbey/olauncher.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=16.10"
+  },
+  "scripts": {
+    "start": "node tools/dev-server.mjs",
+    "dev": "node tools/dev-server.mjs",
+    "dev:real-ha": "node tools/dev-server.mjs --no-mock-ha",
+    "test": "node tools/test.mjs",
+    "check": "node tools/test.mjs",
+    "hygiene": "node tools/hygiene-check.mjs",
+    "build": "node tools/build.mjs",
+    "package": "npm run build && sh tools/package-wgt.sh",
+    "preview:dist": "node tools/dev-server.mjs --root dist/wgt --no-mock-ha",
+    "ha:deploy-scripts": "python3 tools/deploy_ha_scripts.py",
+    "version:patch": "node tools/bump-version.mjs patch",
+    "version:minor": "node tools/bump-version.mjs minor",
+    "version:major": "node tools/bump-version.mjs major"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5"
+  }
+}

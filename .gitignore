@@ -1,0 +1,31 @@
+# Dependencies & build output
+node_modules/
+dist/
+native/build/
+
+# Secrets & personal local overrides — commit only config.example.json & default-wallpaper.svg
+.env
+.env.*
+!.env.example
+launcher/config.json
+launcher/assets/wallpapers/family.*
+launcher/assets/wallpapers/*.local.*
+
+# Tizen signing material, per-TV recovery baselines, local notes
+.local/
+.agent_workspace/
+*.p12
+author.p12
+distributor.p12
+home-baseline*.json
+
+# OS / editor / runtime
+.DS_Store
+*.log
+*.db
+*.sqlite*
+__pycache__/
+*.pyc
+.vscode/*
+!.vscode/tasks.json
+.idea/
