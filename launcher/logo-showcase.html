@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gürsoy Ailesi — Boot Amblemi Önizleme</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+    /* Showcase-only: scale the 3840x2160 boot overlay to fit the browser window */
+    #showcase-root {
+      position: absolute;
+      top: 0; left: 0;
+      width: 3840px; height: 2160px;
+      transform-origin: 0 0;
+      --screen-width: 3840px;
+      --screen-height: 2160px;
+    }
+    .preview-controls {
+      position: fixed; bottom: 20px; right: 24px; z-index: 1000;
+      opacity: 0.4; transition: opacity 0.25s ease;
+    }
+    .preview-controls:hover { opacity: 1; }
+    .preview-btn {
+      background: rgba(30, 41, 59, 0.85); color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px;
+      padding: 10px 18px; font-size: 14px; cursor: pointer; font-family: inherit;
+    }
+    .preview-btn:hover { background: rgba(59, 130, 246, 0.85); color: #fff; }
+  </style>
+</head>
+<body>
+  <div id="showcase-root"></div>
+
+  <div class="preview-controls">
+    <button class="preview-btn" id="replay-btn">↺ Animasyonu Yeniden Oynat</button>
+  </div>
+
+  <template id="boot-tpl">
+    <div id="boot-overlay" class="boot-overlay">
+      <div class="boot-backdrop"></div>
+      <div class="boot-art">
+        <img src="assets/gursoy_boot_cinematic.jpg" class="boot-layer boot-layer-full" alt="Gürsoy Ailesi Amblemi" />
+        <img src="assets/gursoy_boot_cinematic.jpg" class="boot-layer boot-layer-star-top" alt="" />
+        <img src="assets/gursoy_boot_cinematic.jpg" class="boot-layer boot-layer-star-left" alt="" />
+        <img src="assets/gursoy_boot_cinematic.jpg" class="boot-layer boot-layer-star-right" alt="" />
+        <img src="assets/gursoy_boot_cinematic.jpg" class="boot-layer boot-layer-g" alt="" />
+        <span class="boot-flare boot-flare-top"></span>
+        <span class="boot-flare boot-flare-left"></span>
+        <span class="boot-flare boot-flare-right"></span>
+        <span class="boot-flare boot-flare-g"></span>
+        <span class="boot-flare boot-flare-rings"></span>
+      </div>
+      <div class="boot-greeting-row">
+        <div class="boot-greeting" id="boot-greeting"></div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const root = document.getElementById('showcase-root');
+
+    function fit() {
+      const s = Math.min(window.innerWidth / 3840, window.innerHeight / 2160);
+      root.style.transform = `translate(${(window.innerWidth - 3840 * s) / 2}px, ${(window.innerHeight - 2160 * s) / 2}px) scale(${s})`;
+    }
+
+    function greeting() {
+      const h = new Date().getHours();
+      if (h >= 5 && h < 12) return 'Günaydın';
+      if (h >= 12 && h < 18) return 'İyi günler';
+      if (h >= 18 && h < 23) return 'İyi akşamlar';
+      return 'İyi geceler';
+    }
+
+    // Re-inserting the DOM restarts every CSS animation from t=0 (same as a TV boot)
+    function play() {
+      root.innerHTML = '';
+      root.appendChild(document.getElementById('boot-tpl').content.cloneNode(true));
+      root.querySelector('#boot-greeting').innerHTML =
+        `${greeting()}, <strong>Gürsoy Ailesi</strong> <span class="boot-sparkle">✨</span>`;
+    }
+
+    document.getElementById('replay-btn').addEventListener('click', play);
+    window.addEventListener('resize', fit);
+    fit();
+    play();
+
+    // Debug: ?t=1800 freezes the whole sequence at 1.8s (frame-accurate review)
+    const freezeAt = new URLSearchParams(location.search).get('t');
+    if (freezeAt !== null && document.getAnimations) {
+      requestAnimationFrame(() => {
+        document.getAnimations().forEach((a) => { a.pause(); a.currentTime = Number(freezeAt); });
+      });
+    }
+  </script>
+</body>
+</html>

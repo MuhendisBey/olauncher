@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>OLauncher</title>
+
+  <!-- Inline Crash-Loop Watchdog (Safety Net Layer 1) -->
+  <script>
+    (function () {
+      'use strict';
+      var MAX_CRASHES = 3;
+      var WINDOW_MS = 15000;
+      var SMART_HUB_ID = 'com.samsung.tv.csfs';
+      var ALT_HUB_ID = 'com.samsung.tv.home';
+
+      function checkLoop() {
+        var now = Date.now();
+        var raw = sessionStorage.getItem('__olauncher_crashes');
+        var history = raw ? JSON.parse(raw) : [];
+        history = history.filter(function (t) { return now - t < WINDOW_MS; });
+        history.push(now);
+        sessionStorage.setItem('__olauncher_crashes', JSON.stringify(history));
+
+        if (history.length >= MAX_CRASHES) {
+          sessionStorage.removeItem('__olauncher_crashes');
+          console.error('[WATCHDOG] Crash-loop detected (3 crashes in 15s). Recovering to Samsung Smart Hub!');
+          if (window.tizen && window.tizen.application && window.tizen.application.launch) {
+            try {
+              window.tizen.application.launch(SMART_HUB_ID, null, function () {
+                window.tizen.application.launch(ALT_HUB_ID);
+              });
+            } catch (e) {
+              try { window.tizen.application.launch(ALT_HUB_ID); } catch (_) {}
+            }
+          }
+        }
+      }
+
+      window.addEventListener('error', checkLoop);
+      window.addEventListener('unhandledrejection', checkLoop);
+    })();
+  </script>
+
+  <!-- Viewport Stage Auto-Fit Scaling (Seamless 4K / 1080p Tizen compatibility) -->
+  <script>
+    (function () {
+      function fitStage() {
+        window.scrollTo(0, 0);
+        var stage = document.getElementById('stage');
+        if (!stage) return;
+        var targetW = 3840;
+        var targetH = 2160;
+        var scale = Math.min(window.innerWidth / targetW, window.innerHeight / targetH);
+        stage.style.transform = 'scale(' + scale + ')';
+        stage.style.transformOrigin = 'top left';
+        stage.style.left = ((window.innerWidth - targetW * scale) / 2) + 'px';
+        stage.style.top = ((window.innerHeight - targetH * scale) / 2) + 'px';
+      }
+      window.addEventListener('resize', fitStage);
+      window.addEventListener('scroll', function () {
+        if (window.scrollX !== 0 || window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
+      });
+      if (document.readyState !== 'loading') {
+        fitStage();
+      } else {
+        document.addEventListener('DOMContentLoaded', fitStage);
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="stage" class="stage-ready">
+    <!-- 4K Wallpaper Layer -->
+    <div id="wallpaper-container" class="wallpaper"></div>
+    <div class="scrim-top"></div>
+    <div class="scrim-bottom"></div>
+
+    <!-- Top Header Bar -->
+    <header class="header-bar">
+      <!-- Left: Clock, Date & Greeting -->
+      <div id="clock-header" class="clock-container"></div>
+      <!-- Right: Home Assistant Telemetry & Wrench Icon -->
+      <div id="telemetry-header" class="telemetry-container"></div>
+    </header>
+
+    <!-- Bottom Applications Section -->
+    <main class="bottom-section">
+      <h1 class="rail-heading">UYGULAMALAR</h1>
+      <div id="apps-rail" class="apps-rail" role="region" aria-label="Uygulamalar Şeridi">
+        <!-- Cards generated dynamically by AppCardFactory -->
+      </div>
+    </main>
+
+    <!-- Footer Bar -->
+    <footer id="footer-bar" class="footer-bar"></footer>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast-container" class="toast-container hidden"></div>
+
+    <!-- Modal Container (Rescue Menu / All Apps) -->
+    <div id="modal-container" class="modal-container hidden"></div>
+  </div>
+
+  <!-- Entry Script: Loaded as module in dev, bundled for production wgt -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{
+  "household": {
+    "family_name": "Gürsoy Ailesi"
+  },
+  "locale": "tr-TR",
+  "display": {
+    "wallpaper": "assets/wallpapers/default-wallpaper.svg"
+  },
+  "boot": {
+    "enabled": false,
+    "sound": false,
+    "duration_ms": 6200,
+    "title": "G Ü R S O Y",
+    "subtitle": "SMART CINEMA • 4K HDR"
+  },
+  "home_assistant": {
+    "enabled": true,
+    "ha_url": "ws://127.0.0.1:8123/api/websocket",
+    "access_token": "YOUR_LONG_LIVED_ACCESS_TOKEN_HERE",
+    "entities": {
+      "temperature": "sensor.living_room_temperature",
+      "weather": "weather.home"
+    },
+    "temperature_label": "Salon",
+    "subscription_mode": "trigger",
+    "remote_action_event": "tizen_tv_action",
+    "device_id": "living_room_tv",
+    "source_select_entity": "input_select.living_room_tv_source"
+  },
+  "inputs": [
+    {
+      "id": "xbox",
+      "label": "XBOX",
+      "source_type": "HDMI",
+      "source_number": 2,
+      "theme": "xbox",
+      "icon": "icon-xbox",
+      "after_switch": "viewer"
+    }
+  ],
+  "apps": {
+    "browser": {
+      "app_id": "org.tizen.browser",
+      "theme": "browser",
+      "icon": "icon-globe"
+    },
+    "pinned": [
+      { "id": "IkWsFHtOY9.Stremio", "label": "Stremio" },
+      { "id": "rJeHak5zRg.Spotify", "label": "Spotify" },
+      { "id": "9Ur5IzDKqV.TizenYouTube", "label": "YouTube" },
+      { "id": "org.tizen.netflix-app", "label": "Netflix" },
+      { "id": "MCmYXNxgcu.DisneyPlus", "label": "Disney+" },
+      { "id": "org.tizen.primevideo", "label": "Prime Video" }
+    ],
+    "rail_limit": 7
+  },
+  "system": {
+    "self_app_id": "OLauncher1.OLauncher",
+    "smart_hub_app_ids": [
+      "com.samsung.tv.csfs",
+      "com.samsung.tv.home"
+    ],
+    "rescue_app_id": "com.muhendisbey.olauncher.rescue",
+    "tv_viewer_app_id": "org.tizen.tv-viewer"
+  }
+}
