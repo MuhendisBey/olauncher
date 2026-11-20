@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" package="com.muhendisbey.olauncher.rescue" version="1.0.0" api-version="6.5">
+    <profile name="tv-samsung"/>
+    <service-application id="com.muhendisbey.olauncher.rescue" exec="rescue_service" type="c" auto-restart="false" on-boot="false">
+        <label>OLauncher Rescue Tool</label>
+        <icon>icon.png</icon>
+    </service-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/appmanager.launch</privilege>
+    </privileges>
+</manifest>
