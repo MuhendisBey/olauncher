@@ -20,6 +20,7 @@ A lightweight, ad-free, **4K minimalist TV home launcher (`.wgt`)** and **native
 - [Architecture Overview](#architecture-overview)
 - [3-Layer Safety & Recovery Net](#3-layer-safety--recovery-net)
 - [Quickstart (Desktop Simulator)](#quickstart-desktop-simulator)
+- [Recommended: Customize & Deploy with an AI Coding Agent](#recommended-customize--deploy-with-an-ai-coding-agent)
 - [Configuration (`launcher/config.json`)](#configuration-launcherconfigjson)
 - [Home Assistant & Apple Siri Integration](#home-assistant--apple-siri-integration)
 - [Packaging & TV Deployment](#packaging--tv-deployment)
@@ -109,6 +110,52 @@ Open **`http://127.0.0.1:8080`** in your browser.
 | **Esc** or **Backspace** | Close active modal (`AllAppsModal` / `RescueModal`) |
 
 > **Note:** [`tools/dev-server.mjs`](tools/dev-server.mjs) binds strictly to `127.0.0.1`, automatically falls back to [`launcher/config.example.json`](launcher/config.example.json) when `launcher/config.json` is absent, and overwrites `access_token` with `'MOCK_TOKEN'` whenever mock Home Assistant mode is active.
+
+---
+
+## Recommended: Customize & Deploy with an AI Coding Agent
+
+If you are adapting this launcher for your own Samsung TV, **we strongly recommend opening this repository with an AI coding agent** (such as Antigravity, Claude Code, Codex, or Cursor).
+
+Tizen 6.5 enforces strict hardware and window-manager invariants—1080p logical `fitStage()` scaling, zero-blur GPU glassmorphism, the fixed 7-card stage rail, clean `window.blur()` focus handoff, and HDR10+ 1024px tile isolation—all documented in [`AGENTS.md`](AGENTS.md). An AI agent can read [`AGENTS.md`](AGENTS.md) first, tailor your household configuration, generate new locale packs under [`launcher/js/i18n/`](launcher/js/i18n/index.js), validate tests and secret hygiene, and walk you safely through packaging and TV deployment without accidentally breaking Tizen constraints.
+
+### Inputs to Provide to Your Agent
+
+Before asking your agent to customize and deploy OLauncher, prepare and share the following inputs (keep secrets strictly in gitignored local files—never commit them):
+
+| Category | Inputs to Provide | Notes / Example |
+| :--- | :--- | :--- |
+| **TV Hardware & Network** | TV model, Tizen version, TV local IP, Host PC IP, Developer Mode status | Enable Developer Mode (`Apps` $\rightarrow$ `1-2-3-4-5`) with Host PC IP (e.g., TV `192.0.2.93`, Host `192.0.2.153`) |
+| **Personalization & Locale** | Household greeting name, preferred language, custom `3840x2160` wallpaper path, boot screen preference (`enabled`/`sound`) | Built-in `tr-TR`; ask the agent to add `en.js` / `de.js` under `launcher/js/i18n/` if needed; save wallpaper as gitignored `launcher/assets/wallpapers/wallpaper.local.png` |
+| **Pinned Apps & HDMI Inputs** | Up to 7 home rail items (HDMI port numbers/labels, Web Browser, and streaming app IDs/labels) | Keep `rail_limit: 7`; e.g., HDMI 2 console input + Stremio, Spotify, YouTube, Netflix |
+| **Home Assistant *(Optional)*** | HA WebSocket/HTTP URL, Long-Lived Access Token, temperature/climate & weather entity IDs, `device_id`, `media_player`, and `input_select` entities | Example URL: `ws://192.0.2.104:8123/api/websocket`, token placeholder `YOUR_LONG_LIVED_ACCESS_TOKEN_HERE` (store only in gitignored `launcher/config.json` or env vars) |
+| **Deployment Method** | Sideloading tool (`Apps2Samsung` GUI or Tizen `sdb` CLI) and whether to remap the physical Home button | Start with regular sideload testing before optionally remapping `db/appfw/home_appid` |
+
+### Copy-Paste Starter Prompt for Your Agent
+
+```text
+Read AGENTS.md, docs/ARCHITECTURE.md, and launcher/config.example.json first.
+Help me customize and deploy OLauncher for my Samsung Tizen TV using these inputs:
+- TV Model & IP: <MODEL, e.g. Samsung 65QN95B> / <TV_IP> (Developer Host IP: <HOST_IP>)
+- Household Name & Language: "<NAME>" / <LOCALE, e.g. en-US or tr-TR>
+- Wallpaper & Boot Screen: <path to 4K image or default SVG>, boot enabled: <true|false>
+- HDMI Inputs & Pinned Apps (keep rail_limit = 7): <HDMI ports & preferred apps>
+- Home Assistant (optional): ha_url="<WS_URL>", temperature="<ENTITY>", weather="<ENTITY>", device_id="<ID>"
+  (I will insert my HA token locally into gitignored launcher/config.json or export HA_TOKEN myself.)
+- Deployment Preference: <Apps2Samsung | sdb CLI>, Home-button remap: <later | after test>
+
+Create gitignored launcher/config.json (never commit secrets, tokens, or real LAN IPs), add a locale pack if needed, run `npm run hygiene && npm test && npm run package`, and walk me step-by-step through installing dist/olauncher.wgt on my TV. Ask for my explicit confirmation before running any Home-button remap command.
+```
+
+### End-to-End Agent Workflow
+
+1. **Bootstrap & Read Invariants:** The agent reads [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) so it preserves the 7-card width budget, zero-blur GPU CSS rules, and browser focus handoff.
+2. **Personalize Safely (Zero Secret Commits):** The agent writes your values to gitignored [`launcher/config.json`](launcher/config.example.json) and `launcher/assets/wallpapers/wallpaper.local.*`. *(If you want encrypted backups of your personal config, token, and TV baseline in a separate private repository, ask your agent to mirror an independent sibling `-ops` repo using `SOPS + age` and `just`.)*
+3. **Validate & Package Locally:** The agent starts `npm run dev` (`http://127.0.0.1:8080`) for visual and D-pad preview, then runs `npm run hygiene`, `npm test`, and `npm run package` to produce `./dist/olauncher.wgt`.
+4. **Deploy & Optional Home Remap (With Guardrails):**
+   * Install `./dist/olauncher.wgt` via **Apps2Samsung** or `./native/scripts/sdb-setup.sh <TV_IP> install-wgt` and verify OLauncher launches smoothly from the TV's Apps menu.
+   * Back up your TV's current factory Home configuration first (`./native/scripts/sdb-setup.sh <TV_IP> query` $\rightarrow$ gitignored `home-baseline.json`) before explicitly approving any Home-button remap (`apply`), knowing you can always revert via `restore` or the on-screen 🔧 Rescue Menu.
+   * Optionally push Siri/HomeKit automation scripts with `HA_URL=<http_url> HA_TOKEN=<token> npm run ha:deploy-scripts`.
 
 ---
 
